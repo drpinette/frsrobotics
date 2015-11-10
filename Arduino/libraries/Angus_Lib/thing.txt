@@ -1,0 +1,8 @@
+Problem
+Expected initializer before 'void'
+Solutions
+1. Attempt to "Force Initialize" the initializer to work
+2. Retype the code
+3. Restart the Arduino Editor
+4. Attempt to remake the initialize program
+5. 

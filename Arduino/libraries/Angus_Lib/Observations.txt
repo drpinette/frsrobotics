@@ -1,0 +1,4 @@
+10/27/15
+
+ Right front sonar is stopping every couple seconds giving a very low reading.
+ Same thing with left front

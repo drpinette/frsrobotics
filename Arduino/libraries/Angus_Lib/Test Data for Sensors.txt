@@ -1,0 +1,28 @@
+ Right Front 1.59 sec/blink
+ Right Back 1.31 sec/blink
+ Left Front does no blink
+ Left Back 1.15 sec/blink
+ Left Front Still no blink (F.U.B.A.R.)
+			With Moved Cabled From RIGHT_BACK_SENSOR to FRONT_LEFT_SENSOR
+ Left Front sensor test starting on rght back port
+		Good cable good port no blink 
+ Pin for left front test with good cable and good sensor
+		Connected to right back.
+ Verdict Left Front Sensor F.U.B.A.R.
+ ====================================================
+ Test RIGHT_FRONT_SENSOR
+ Tested for time of blinking sensor light(Laptop Power Only)
+	# of times blinked: 14
+	Time (s): 18.53
+ Tested for time of blinking sensor light(Laptop and Battery)
+	# of times blinked: 4
+	Time (s): 6.00
+ Tested for time of blinking sensor light(Battery only, 30 interations)
+	# of times blinked: 1
+	Time (s): N/A
+ Test 2 (2000 interations)
+	# of times blinked: 1
+	Time (s): N/A
+ Test 3 (20000 interations)
+	# of times blinked: 1 
+	Time (s): N/A

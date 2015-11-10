@@ -1,0 +1,17 @@
+Arduino: 1.5.8 (Windows 8), Board: "Arduino Yún"
+
+C:\Program Files (x86)\Arduino\libraries\Angus_Lib\Angus_Lib.cpp:4:30: error: 'AFMS' was not declared in this scope
+ Adafruit_DCMotor leftMotor = AFMS.getMotor(LEFT_MOTOR);
+                              ^
+C:\Program Files (x86)\Arduino\libraries\Angus_Lib\Angus_Lib.cpp:5:31: error: 'AFMS' was not declared in this scope
+ Adafruit_DCMotor rightMotor = AFMS.getMotor(RIGHT_MOTOR);
+                               ^
+C:\Program Files (x86)\Arduino\libraries\Angus_Lib\Angus_Lib.cpp: In function 'void initialize()':
+C:\Program Files (x86)\Arduino\libraries\Angus_Lib\Angus_Lib.cpp:132:5: error: 'AFMS' was not declared in this scope
+     AFMS.begin();  // create with the default frequency 1.6KHz
+     ^
+Error compiling.
+
+  This report would have more information with
+  "Show verbose output during compilation"
+  enabled in File > Preferences.

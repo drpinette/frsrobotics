@@ -1,0 +1,38 @@
+Arduino: 1.5.8 (Windows 8), Board: "Arduino Yún"
+
+C:\Users\Niki\Documents\Arduino\libraries\Angus_Lib\Angus_Lib.cpp: In function 'int followRightWall(float, float)':
+C:\Users\Niki\Documents\Arduino\libraries\Angus_Lib\Angus_Lib.cpp:107:24: error: 'FORWARD_LEFT_FAST' was not declared in this scope
+          setMotorSpeed(FORWARD_LEFT_FAST+FORWARD_LEFT_TURN,
+                        ^
+C:\Users\Niki\Documents\Arduino\libraries\Angus_Lib\Angus_Lib.cpp:107:42: error: 'FORWARD_LEFT_TURN' was not declared in this scope
+          setMotorSpeed(FORWARD_LEFT_FAST+FORWARD_LEFT_TURN,
+                                          ^
+C:\Users\Niki\Documents\Arduino\libraries\Angus_Lib\Angus_Lib.cpp:108:43: error: 'FORWARD_RIGHT_FAST' was not declared in this scope
+                                           FORWARD_RIGHT_FAST+BACKWARD_RIGHT_TURN,
+                                           ^
+C:\Users\Niki\Documents\Arduino\libraries\Angus_Lib\Angus_Lib.cpp:108:62: error: 'BACKWARD_RIGHT_TURN' was not declared in this scope
+                                           FORWARD_RIGHT_FAST+BACKWARD_RIGHT_TURN,
+                                                              ^
+C:\Users\Niki\Documents\Arduino\libraries\Angus_Lib\Angus_Lib.cpp:112:23: error: 'FORWARD_LEFT_FAST' was not declared in this scope
+         setMotorSpeed(FORWARD_LEFT_FAST+BACKWARD_LEFT_TURN,
+                       ^
+C:\Users\Niki\Documents\Arduino\libraries\Angus_Lib\Angus_Lib.cpp:112:41: error: 'BACKWARD_LEFT_TURN' was not declared in this scope
+         setMotorSpeed(FORWARD_LEFT_FAST+BACKWARD_LEFT_TURN,
+                                         ^
+C:\Users\Niki\Documents\Arduino\libraries\Angus_Lib\Angus_Lib.cpp:113:42: error: 'FORWARD_RIGHT_FAST' was not declared in this scope
+                                          FORWARD_RIGHT_FAST+FORWARD_RIGHT_TURN,
+                                          ^
+C:\Users\Niki\Documents\Arduino\libraries\Angus_Lib\Angus_Lib.cpp:113:61: error: 'FORWARD_RIGHT_TURN' was not declared in this scope
+                                          FORWARD_RIGHT_FAST+FORWARD_RIGHT_TURN,
+                                                             ^
+C:\Users\Niki\Documents\Arduino\libraries\Angus_Lib\Angus_Lib.cpp:117:23: error: 'FORWARD_LEFT_FAST' was not declared in this scope
+         setMotorSpeed(FORWARD_LEFT_FAST, FORWARD_RIGHT_FAST,
+                       ^
+C:\Users\Niki\Documents\Arduino\libraries\Angus_Lib\Angus_Lib.cpp:117:42: error: 'FORWARD_RIGHT_FAST' was not declared in this scope
+         setMotorSpeed(FORWARD_LEFT_FAST, FORWARD_RIGHT_FAST,
+                                          ^
+Error compiling.
+
+  This report would have more information with
+  "Show verbose output during compilation"
+  enabled in File > Preferences.

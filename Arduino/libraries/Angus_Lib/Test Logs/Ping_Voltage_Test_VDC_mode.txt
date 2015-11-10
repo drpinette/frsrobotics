@@ -1,0 +1,10 @@
+Vin + Gnd|Angus
+4.66
+Vcc + Gnd|Angus
+4.36
+=================
+Vin + Gnd|PrepH
+4.53
+Vcc + Gnd|PrepH
+4.29
+=================

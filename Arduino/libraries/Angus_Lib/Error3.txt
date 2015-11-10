@@ -1,0 +1,20 @@
+Arduino: 1.5.8 (Windows 8), Board: "Arduino Yún"
+
+C:\Users\Niki\Documents\Arduino\libraries\Angus_Lib\Angus_Lib.cpp: In function 'bool followLeftWall2(float, float)':
+C:\Users\Niki\Documents\Arduino\libraries\Angus_Lib\Angus_Lib.cpp:120:9: error: 'frontDist' was not declared in this scope
+     if (frontDist > INTERSECTION_DISTANCE_THRESHOLD) return false;
+         ^
+C:\Users\Niki\Documents\Arduino\libraries\Angus_Lib\Angus_Lib.cpp:121:11: error: redeclaration of 'float backDist'
+     float backDist = readSonarDistance(LEFT_FRONT_PIN); 
+           ^
+C:\Users\Niki\Documents\Arduino\libraries\Angus_Lib\Angus_Lib.cpp:119:11: error: 'float backDist' previously declared here
+     float backDist = readSonarDistance(LEFT_BACK_PIN); 
+           ^
+C:\Users\Niki\Documents\Arduino\libraries\Angus_Lib\Angus_Lib.cpp:122:34: error: 'frontDist' was not declared in this scope
+     float distance = (backDist + frontDist) / 2;
+                                  ^
+Error compiling.
+
+  This report would have more information with
+  "Show verbose output during compilation"
+  enabled in File > Preferences.

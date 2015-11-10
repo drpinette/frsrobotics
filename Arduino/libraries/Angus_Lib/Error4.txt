@@ -1,0 +1,8 @@
+Arduino: 1.5.8 (Windows 8), Board: "Arduino Yún"
+
+Test_followLeftWall.ino:6:1: error: expected initializer before 'void'
+Error compiling.
+
+  This report would have more information with
+  "Show verbose output during compilation"
+  enabled in File > Preferences.
