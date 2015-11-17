@@ -225,7 +225,8 @@ bool followRightWall(float nearDistance, float farDistance){
 bool followRightWall2(float nearDistance, float farDistance){
     float frontDist = readSonarDistance(RIGHT_FRONT_PIN); 
     if (frontDist > INTERSECTION_DISTANCE_THRESHOLD) return true;
-    float backDist = readSonarDistance(RIGHT_BACK_PIN); 
+    delay(25);
+	float backDist = readSonarDistance(RIGHT_BACK_PIN); 
     float distance = (frontDist + backDist) / 2;
 	float offset;
 	if (distance < nearDistance) offset = FOLLOW_OFFSET;
@@ -233,25 +234,25 @@ bool followRightWall2(float nearDistance, float farDistance){
 	else offset = 1-(distance-nearDistance)/(farDistance-nearDistance);
 	
 
-	Serial.print("frontDist "); Serial.print(frontDist); Serial.print("\n");
-	Serial.print("backDist "); Serial.print(backDist); Serial.print("\n");
-	Serial.print("offset "); Serial.print(offset); Serial.print("\n");
+	//Serial.print("frontDist "); Serial.print(frontDist); Serial.print("\n");
+	//Serial.print("backDist "); Serial.print(backDist); Serial.print("\n");
+	//Serial.print("offset "); Serial.print(offset); Serial.print("\n");
 //	Serial.print("nearDistance "); Serial.print(nearDistance); Serial.print("\n");
 //	Serial.print("farDistance "); Serial.print(farDistance); Serial.print("\n\n");
 	
 	
     if ((frontDist - backDist) > offset ) {
-		Serial.print("Right_Turn "); Serial.print(frontDist-backDist); Serial.print("\n");
+		//Serial.print("Right_Turn "); Serial.print(frontDist-backDist); Serial.print("\n");
          setMotorSpeed(DEFAULT_SPEED, DEFAULT_SPEED-TURN_ADJUST,
 				FORWARD, FORWARD);
     }
     else if ((frontDist - backDist)< offset ){ 
-	   Serial.print("Left_Turn "); Serial.print(frontDist-backDist); Serial.print("\n");
+	  // Serial.print("Left_Turn "); Serial.print(frontDist-backDist); Serial.print("\n");
 		setMotorSpeed(DEFAULT_SPEED-TURN_ADJUST, DEFAULT_SPEED,
                 FORWARD, FORWARD);
     }
     else {
-	   Serial.print("No_Turn "); Serial.print(frontDist-backDist); Serial.print("\n");
+	   //Serial.print("No_Turn "); Serial.print(frontDist-backDist); Serial.print("\n");
         setMotorSpeed(DEFAULT_SPEED, DEFAULT_SPEED,
                 FORWARD, FORWARD);
     }

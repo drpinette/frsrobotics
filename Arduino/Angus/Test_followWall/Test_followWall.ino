@@ -5,11 +5,11 @@
 void setup() {
   // put your setup code here, to run once:
   initialize(); 
-  Serial.begin(9600);
+  Serial.begin(57600);
   digitalWrite(13,HIGH);
   delay(500);
   digitalWrite(13,LOW);
-  delay(1000);
+  delay(7500);
 }
 
 void loop() {

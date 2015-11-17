@@ -9,9 +9,9 @@ void setup() {
   delay(7500);
   
   //Move along wall
-  bool done = false;
+  bool done = false; 
   while (!done){
-   done = followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);
+   done = followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD); 
   }
   digitalWrite(13,HIGH);
   

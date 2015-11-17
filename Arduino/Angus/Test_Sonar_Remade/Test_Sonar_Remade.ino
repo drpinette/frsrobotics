@@ -5,7 +5,7 @@
 
 void setup() {
     initialize();
-    Serial.begin(9600);
+    Serial.begin(57600);
     digitalWrite(13,HIGH);
     delay(500);
     digitalWrite(13,LOW);
@@ -15,6 +15,7 @@ void setup() {
 void loop() {
   //put your main code here, to run repeatedly:
   float inches = readSonarDistance(RIGHT_FRONT_PIN);
+  delay(5);
   //float inches3 = readSonarDistance(LEFT_FRONT_PIN);
   float inches2 = readSonarDistance(RIGHT_BACK_PIN);
   //float inches4 = readSonarDistance(LEFT_BACK_PIN);
@@ -28,5 +29,5 @@ void loop() {
   Serial.print(inches4);
   //Serial.print("Inches");*/
   Serial.println();
-  //delay(50);
+  delay(5);
 }
