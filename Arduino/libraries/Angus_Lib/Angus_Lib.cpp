@@ -264,7 +264,8 @@ bool followRightWall2(float nearDistance, float farDistance){
 
 void stop() {
  setMotorSpeed(0,0, BRAKE, BRAKE);
- //delay(100); nts: removed for test only
+ delay(1000); //This is so we can see what the robot is doing in "steps".
+ //Intended for test programs.
 }
 
 
@@ -397,6 +398,13 @@ bool locateCandle(int speed, bool turnRight) {
 	return true;
 }
 
+void fullStop() {
+	setMotorSpeed(0, 0, BRAKE, BRAKE);
+	delay(100000); //This is stupidly high to allow us to unplug the battery
+	//from the robot in addition to letting us safely turn off the motors.
+	//This is intended for test programs
+	}
+	
 void startLedShow() {
 	digitalWrite(13,HIGH);
 	delay(100);

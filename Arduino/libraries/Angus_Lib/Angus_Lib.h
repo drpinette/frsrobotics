@@ -100,6 +100,8 @@ void alignRightWall() ;
 
 void stop();
 
+void fullStop();
+
 void move();
 
 #endif
