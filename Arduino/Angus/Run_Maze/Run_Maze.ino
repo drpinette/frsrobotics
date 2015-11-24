@@ -10,19 +10,18 @@ void setup() {
   
   //Move along wall
   bool done = false;
-  while (!done){
+  do {
    done = followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);  
-}
+  } while (!done);
   digitalWrite(13,HIGH); //debug, remove for actual competition
   
   //Move into intersection
-  done = false;
   setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
-  while (!done){
+  do  {
    float distance = readSonarDistance(RIGHT_BACK_PIN);
    //Serial.println(distance);
    done = distance > INTERSECTION_DISTANCE_THRESHOLD;
-  }
+  } while (!done);
   digitalWrite(13,LOW); //debug, remove for actual competition
   //stop();
   //delay(3000);
@@ -30,12 +29,11 @@ void setup() {
   stop();*/
   //return;
   //move front out of intersection
-  done = false;
   setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
-  while (!done){
+  do  {
    float distance = readSonarDistance(RIGHT_FRONT_PIN);
    done = distance < INTERSECTION_DISTANCE_THRESHOLD;
-  }
+  } while (!done);
   digitalWrite(13,HIGH); //debug, remove for actual competition
   //stop();
   //delay(100);
@@ -67,22 +65,26 @@ void setup() {
   }
   digitalWrite(13,HIGH); //debug, remove for actual competition
   
-  //Move into doorway for room two
+  //Move into doorway for room two 
+  //fullStop();
   done = false;
   setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
   while (!done){
    float distance = readSonarDistance(RIGHT_BACK_PIN);
    done = distance > INTERSECTION_DISTANCE_THRESHOLD;
+   Serial.print(distance);
+   Serial.print("\n");  
   }
   digitalWrite(13,LOW); //debug, remove for actual competition
   //stop();
   
   //note may enter room 1 and go into room 2 here
   
+  
   //turn around
-  turn180(SLOW_SPEED);
-  //delay(500);
   stop();
+  fullStop();
+  turn180(SLOW_SPEED);
   fullStop();
   //move past wall on right if any
   if (isDoorA) {

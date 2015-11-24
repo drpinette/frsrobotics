@@ -44,6 +44,7 @@ float readSonarDistance(int pingPin) {
   // second).  This gives the distance travelled by the ping, outbound
   // and return, so we divide by 2 to get the distance of the obstacle.
   // See: http://www.parallax.com/dl/docs/prod/acc/28015-PING-v1.3.pdf
+  delay(25); 
   return duration / 74 / 2;
 }
 
@@ -225,7 +226,7 @@ bool followRightWall(float nearDistance, float farDistance){
 bool followRightWall2(float nearDistance, float farDistance){
     float frontDist = readSonarDistance(RIGHT_FRONT_PIN); 
     if (frontDist > INTERSECTION_DISTANCE_THRESHOLD) return true;
-    delay(25);
+    
 	float backDist = readSonarDistance(RIGHT_BACK_PIN); 
     float distance = (frontDist + backDist) / 2;
 	float offset;
@@ -262,10 +263,9 @@ bool followRightWall2(float nearDistance, float farDistance){
 
 
 
-void stop() {
+void stop(int pause) {
  setMotorSpeed(0,0, BRAKE, BRAKE);
- delay(1000); //This is so we can see what the robot is doing in "steps".
- //Intended for test programs.
+ delay(pause); 
 }
 
 
@@ -399,11 +399,8 @@ bool locateCandle(int speed, bool turnRight) {
 }
 
 void fullStop() {
-	setMotorSpeed(0, 0, BRAKE, BRAKE);
-	delay(100000); //This is stupidly high to allow us to unplug the battery
-	//from the robot in addition to letting us safely turn off the motors.
-	//This is intended for test programs
-	}
+	stop(100000);
+}
 	
 void startLedShow() {
 	digitalWrite(13,HIGH);

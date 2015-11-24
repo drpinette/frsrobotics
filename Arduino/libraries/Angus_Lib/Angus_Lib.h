@@ -98,7 +98,7 @@ void alignLeftWall() ;
 
 void alignRightWall() ; 
 
-void stop();
+void stop(int pause=100); 
 
 void fullStop();
 
