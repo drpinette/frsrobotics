@@ -169,39 +169,39 @@ bool followLeftWall(float nearDistance, float farDistance) {
     } 
 	return backDist < INTERSECTION_DISTANCE_THRESHOLD;
 }
-/*
+
 bool followLeftWall2(float nearDistance, float farDistance){
-    float backDist = readSonarDistance(LEFT_BACK_PIN); 
-    if (backDist > INTERSECTION_DISTANCE_THRESHOLD) return false;
     float frontDist = readSonarDistance(LEFT_FRONT_PIN); 
+    if (frontDist > INTERSECTION_DISTANCE_THRESHOLD) return false;
+    float backDist = readSonarDistance(LEFT_BACK_PIN); 
     float distance = (backDist + frontDist) / 2;
 	float offset;
 	if (distance < nearDistance) offset = FOLLOW_OFFSET;
 	else if (distance > farDistance) offset = 0;
 	else offset = 1-(distance-nearDistance)/(farDistance-nearDistance);
-	}
+	
 	/*
-	Serial.print("frontDist "); Serial.print(frontDist); Serial.print("\n");
-	Serial.print("backDist "); Serial.print(backDist); Serial.print("\n");
-	Serial.print("offset "); Serial.print(offset); Serial.print("\n");
-	Serial.print("nearDistance "); Serial.print(nearDistance); Serial.print("\n");
-	Serial.print("farDistance "); Serial.print(farDistance); Serial.print("\n\n");
-	/
-    if ((backDist - frontDist) > offset ) {
-         setMotorSpeed(DEFAULT_SPEED, DEFAULT_SPEED-TURN_ADJUST,
+	 Serial.print("frontDist "); Serial.print(frontDist); Serial.print("\n");
+	 Serial.print("backDist "); Serial.print(backDist); Serial.print("\n");
+	 Serial.print("offset "); Serial.print(offset); Serial.print("\n");
+	 Serial.print("nearDistance "); Serial.print(nearDistance); Serial.print("\n");
+	 Serial.print("farDistance "); Serial.print(farDistance); Serial.print("\n\n");
+	*/
+    if ((frontDist - backDist) > offset ) {
+         setMotorSpeed(DEFAULT_SPEED-TURN_ADJUST, DEFAULT_SPEED,
 				FORWARD, FORWARD);
     }
-    else if ((backDist - frontDist)< -offset ){
-        setMotorSpeed(DEFAULT_SPEED-TURN_ADJUST, DEFAULT_SPEED,
+    else if ((frontDist - backDist)< offset ){
+        setMotorSpeed(DEFAULT_SPEED, DEFAULT_SPEED-TURN_ADJUST,
                 FORWARD, FORWARD);
     }
     else {
         setMotorSpeed(DEFAULT_SPEED, DEFAULT_SPEED,
                 FORWARD, FORWARD);
     }
-	return true;
+	return false;
 }
-*/
+
 
 bool followRightWall(float nearDistance, float farDistance){
     float frontDist = readSonarDistance(RIGHT_FRONT_PIN); 
@@ -225,8 +225,7 @@ bool followRightWall(float nearDistance, float farDistance){
 
 bool followRightWall2(float nearDistance, float farDistance){
     float frontDist = readSonarDistance(RIGHT_FRONT_PIN); 
-    if (frontDist > INTERSECTION_DISTANCE_THRESHOLD) return true;
-    
+    if (frontDist > INTERSECTION_DISTANCE_THRESHOLD) return true;    
 	float backDist = readSonarDistance(RIGHT_BACK_PIN); 
     float distance = (frontDist + backDist) / 2;
 	float offset;

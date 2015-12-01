@@ -6,7 +6,7 @@ void setup() {
   // put your setup code here, to run once:
   Serial.begin(57600);
   initialize();
-  delay(7500);
+  delay(5000);
   
   //Move along wall
   bool done = false;
@@ -66,15 +66,11 @@ void setup() {
   digitalWrite(13,HIGH); //debug, remove for actual competition
   
   //Move into doorway for room two 
-  //fullStop();
-  done = false;
   setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
-  while (!done){
+  do {
    float distance = readSonarDistance(RIGHT_BACK_PIN);
    done = distance > INTERSECTION_DISTANCE_THRESHOLD;
-   Serial.print(distance);
-   Serial.print("\n");  
-  }
+  } while (!done);
   digitalWrite(13,LOW); //debug, remove for actual competition
   //stop();
   
@@ -83,69 +79,97 @@ void setup() {
   
   //turn around
   stop();
-  fullStop();
   turn180(SLOW_SPEED);
-  fullStop();
+  
   //move past wall on right if any
   if (isDoorA) {
-     while (!done){
+    do {
        done = followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);
-    }
+    } while (!done);
   }
   
-   
   //move to left wall
-  done = false;
   setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
-  while (!done){
+  do {
    float distance = readSonarDistance(LEFT_BACK_PIN);
    done = distance < INTERSECTION_DISTANCE_THRESHOLD;
-  }
+  } while (!done);
   digitalWrite(13,LOW); //debug, remove for actual competition
   //stop();
   
-
   //Move back along wall
-  done = false;
-  while (!done){
-   done = followLeftWall(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD); 
-  } 
+  do {
+   done = followLeftWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD); 
+  } while (!done);
+  fullStop();
   
   //Move into intersection
-  done = false;
   setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
-  while (!done){
-   float distance = readSonarDistance(RIGHT_BACK_PIN);
+  do {
+   float distance = readSonarDistance(LEFT_BACK_PIN);
    done = distance > INTERSECTION_DISTANCE_THRESHOLD;
-  }
-  stop;
-  delay(5000);
+  } while (!done);
+  digitalWrite(13,HIGH);
+  stop();
   
   //turn for Door/Room 3
-  turnLeft90;
+  turnLeft90(SLOW_SPEED);
   
   //Move out of intersection(Part 2)
-  done = false;
   setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
-  while (!done){
+  do {
    float distance = readSonarDistance(RIGHT_BACK_PIN);
    done = distance < INTERSECTION_DISTANCE_THRESHOLD;
-  }
+  } while (!done);
+  digitalWrite(13,LOW);
   
   //Move to Room/Door 3
-  while (true){
-       float distance = readSonarDistance(RIGHT_BACK_PIN);
-       if (distance > INTERSECTION_DISTANCE_THRESHOLD) break;
-       followLeftWall(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);
-  }
+  do {
+      done = followRightWall(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);
+  } while (!done);
+  digitalWrite(13,HIGH);
+  
+  //Move into doorway for room three 
+  setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
+  do {
+   float distance = readSonarDistance(RIGHT_BACK_PIN);
+   done = distance > INTERSECTION_DISTANCE_THRESHOLD;
+  } while (!done);
+  digitalWrite(13,LOW);
   
   //turn for Door/Room 4
-  turn180;
-  followRightWall(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);
   stop();
+  turn180;
+  
+  //Move towards intersection
+  followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);
+  
+  //Move into intersection
+  setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
+  do {
+   float distance = readSonarDistance(RIGHT_BACK_PIN);
+   done = distance > INTERSECTION_DISTANCE_THRESHOLD;
+  } while (!done);
+  digitalWrite(13,LOW);
+
+  //Move nose out of intersection
+  setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
+  do {
+   float distance = readSonarDistance(RIGHT_FRONT_PIN);
+   done = distance < INTERSECTION_DISTANCE_THRESHOLD;
+  } while (!done);
+  digitalWrite(13,LOW);
+
+  //Move butt out of intersection
+  setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
+  do {
+   float distance = readSonarDistance(RIGHT_BACK_PIN);
+   done = distance < INTERSECTION_DISTANCE_THRESHOLD;
+  } while (!done);
+  digitalWrite(13,LOW);
+  
   fullStop();
 }
-
 //===============================================================
 void loop() {
   // put your main code here, to run repeatedly:
