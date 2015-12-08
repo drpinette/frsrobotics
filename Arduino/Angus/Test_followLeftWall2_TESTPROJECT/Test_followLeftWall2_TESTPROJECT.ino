@@ -5,6 +5,9 @@
 void setup() {
   // put your setup code here, to run once:
   initialize();
+  digitalWrite(13,HIGH);
+  delay(500);
+  digitalWrite(13,LOW);
   Serial.begin(9600);
   
 }
@@ -14,10 +17,5 @@ bool done = false;
 void loop() {
   // put your main code here, to run repeatedly:
   
-  if (!done && !followLeftWall2(DEFAULT_FAR_THRESHOLD,DEFAULT_NEAR_THRESHOLD)){
-   done = true;
-   setMotorSpeed(0,0, BRAKE, BRAKE);
-  }
-  delay(25);
-  
+ followLeftWall2(DEFAULT_FAR_THRESHOLD,DEFAULT_NEAR_THRESHOLD);
 }

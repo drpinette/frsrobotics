@@ -172,7 +172,7 @@ bool followLeftWall(float nearDistance, float farDistance) {
 
 bool followLeftWall2(float nearDistance, float farDistance){
     float frontDist = readSonarDistance(LEFT_FRONT_PIN); 
-    if (frontDist > INTERSECTION_DISTANCE_THRESHOLD) return false;
+    if (frontDist > INTERSECTION_DISTANCE_THRESHOLD) return true;
     float backDist = readSonarDistance(LEFT_BACK_PIN); 
     float distance = (backDist + frontDist) / 2;
 	float offset;

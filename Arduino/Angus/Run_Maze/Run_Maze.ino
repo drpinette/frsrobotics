@@ -9,7 +9,7 @@ void setup() {
   delay(5000);
   
   //Move along wall
-  bool done = false;
+  bool done;
   do {
    done = followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);  
   } while (!done);
@@ -95,13 +95,13 @@ void setup() {
    done = distance < INTERSECTION_DISTANCE_THRESHOLD;
   } while (!done);
   digitalWrite(13,LOW); //debug, remove for actual competition
-  //stop();
+  //fullStop();
   
   //Move back along wall
   do {
    done = followLeftWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD); 
   } while (!done);
-  fullStop();
+  //fullStop();
   
   //Move into intersection
   setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
@@ -122,10 +122,10 @@ void setup() {
    done = distance < INTERSECTION_DISTANCE_THRESHOLD;
   } while (!done);
   digitalWrite(13,LOW);
-  
+ 
   //Move to Room/Door 3
   do {
-      done = followRightWall(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);
+      done = followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);
   } while (!done);
   digitalWrite(13,HIGH);
   
@@ -136,10 +136,9 @@ void setup() {
    done = distance > INTERSECTION_DISTANCE_THRESHOLD;
   } while (!done);
   digitalWrite(13,LOW);
-  
   //turn for Door/Room 4
   stop();
-  turn180;
+  turn180(SLOW_SPEED);
   
   //Move towards intersection
   followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);
@@ -164,9 +163,53 @@ void setup() {
   setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
   do {
    float distance = readSonarDistance(RIGHT_BACK_PIN);
-   done = distance < INTERSECTION_DISTANCE_THRESHOLD;
+   done = distance <  LEAVING_INTERSECTION_DISTANCE_THRESHOLD;
   } while (!done);
   digitalWrite(13,LOW);
+ 
+ //move past room 4 
+  do {
+   done = followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);  
+  } while (!done);
+  digitalWrite(13,HIGH); //debug, remove for actual competition
+  
+  //Move into intersection
+  setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
+  do  {
+   float distance = readSonarDistance(LEFT_BACK_PIN);
+   done = distance > INTERSECTION_DISTANCE_THRESHOLD;
+  } while (!done);
+  
+  stop();
+  
+  turnLeft90(SLOW_SPEED);
+  
+  //moving along outside of room 4
+  do {
+   followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);
+   float distance = readSonarDistance(LEFT_BACK_PIN);
+   done = distance <  INTERSECTION_DISTANCE_THRESHOLD;  
+  } while (!done);
+  digitalWrite(13,HIGH); //debug, remove for actual competition
+  
+  do {
+   followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);
+   float distance = readSonarDistance(LEFT_BACK_PIN);
+   done = distance >  INTERSECTION_DISTANCE_THRESHOLD;  
+  } while (!done);
+  digitalWrite(13,HIGH); //debug, remove for actual competition
+  
+  stop();
+  
+  turnLeft90(SLOW_SPEED);
+  
+  //moving into room 4 doorway
+  do {
+   followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);
+   float distance = readSonarDistance(LEFT_BACK_PIN);
+   done = distance <  LEAVING_INTERSECTION_DISTANCE_THRESHOLD;  
+  } while (!done);
+  digitalWrite(13,HIGH); //debug, remove for actual competition
   
   fullStop();
 }
