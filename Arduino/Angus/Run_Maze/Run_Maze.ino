@@ -2,6 +2,25 @@
 #include <Wire.h>
 #include <Angus_Lib.h>
 
+void runRoom1DoorA() {
+  // move into doorway
+  move(7, DEFAULT_SPEED);
+  // entering room
+  stop();
+  turnLeft90(SLOW_SPEED);
+  setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
+  bool done;
+  do  {
+   float distance = readSonarDistance(RIGHT_BACK_PIN);
+   done = distance < INTERSECTION_DISTANCE_THRESHOLD;
+  } while (!done);
+  move(7, DEFAULT_SPEED);
+  //Look for candle
+  stop();
+  locateCandle(SLOW_SPEED,true);
+  fullStop();
+}
+
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(57600);
@@ -38,20 +57,20 @@ void setup() {
   //stop();
   //delay(100);
   //move rear out of intersection
-  done = false;
+
   setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
-  while (!done){
-   float distance = readSonarDistance(RIGHT_BACK_PIN);
+  do  {
+   float distance = readSonarDistance(LEFT_BACK_PIN);
    done = distance < INTERSECTION_DISTANCE_THRESHOLD;
-  }
+  } while (!done);
   digitalWrite(13,LOW); //debug, remove for actual competition
   
   //Check Room 1 Door A
   bool isDoorA;
-  {
-   float distance = readSonarDistance(LEFT_BACK_PIN);
-   isDoorA = distance > INTERSECTION_DISTANCE_THRESHOLD;
-  }
+  
+  float distance = readSonarDistance(LEFT_FRONT_PIN);
+  isDoorA = distance > INTERSECTION_DISTANCE_THRESHOLD;
+  if (isDoorA) runRoom1DoorA();
   //NTS: If Door = A, Then we will enter Room 1
   
   
