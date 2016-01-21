@@ -4,20 +4,29 @@
 
 void runRoom1DoorA() {
   // move into doorway
-  move(7, DEFAULT_SPEED);
+  move(19, DEFAULT_SPEED);
   // entering room
   stop();
-  turnLeft90(SLOW_SPEED);
+  turnLeft90(SLOWMO_SPEED);
   setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
   bool done;
   do  {
    float distance = readSonarDistance(RIGHT_BACK_PIN);
    done = distance < INTERSECTION_DISTANCE_THRESHOLD;
   } while (!done);
-  move(7, DEFAULT_SPEED);
+  move(10, DEFAULT_SPEED);
   //Look for candle
-  stop();
-  locateCandle(SLOW_SPEED,true);
+  stop(500);
+  locateCandle(CANDLE_LOCATE_SPEED,true);
+  digitalWrite(13, HIGH);
+  //leave room 1
+  delay(250);
+  do  {
+   float distance = readSonarDistance(RIGHT_BACK_PIN);
+   done = distance < INTERSECTION_DISTANCE_THRESHOLD;
+  } while (!done);
+  //digitalWrite(13,LOW);
+  
   fullStop();
 }
 
