@@ -111,6 +111,105 @@ void turnLeft90(int speed) {
 	setMotorSpeed(speed, speed, BRAKE, BRAKE);
 }
 
+void turnLeft90AlignRight(int speed) { 
+	int distance = TURN90 * 0.95;
+	setMotorSpeed(speed,speed, BACKWARD, FORWARD);
+	int prevVal = checkOdometry();
+	while (distance > 0){
+		int val = checkOdometry();
+		if (prevVal != val){
+			distance--;
+			prevVal = val;
+		}
+	}
+	float backDist, frontDist;
+	do {
+		backDist = readSonarDistance(RIGHT_BACK_PIN);
+		frontDist = readSonarDistance(RIGHT_FRONT_PIN);
+		/*Serial.print("Right_Back ");
+		Serial.print(backDist);
+		Serial.print("Inches, Right_Front ");
+		Serial.println(frontDist); */
+	} while (backDist > frontDist);
+	stop();
+}
+
+void turnRight90AlignLeft(int speed) {
+	int distance = TURN90 * 0.95;
+	setMotorSpeed(speed,speed, FORWARD, BACKWARD);
+	int prevVal = checkOdometry();
+	while (distance > 0){
+		int val = checkOdometry();
+		if (prevVal != val){
+			distance--;
+			prevVal = val;
+		}
+	}
+	float backDist, frontDist;
+	do {
+		backDist = readSonarDistance(LEFT_BACK_PIN);
+		frontDist = readSonarDistance(LEFT_FRONT_PIN);
+		/*Serial.print("Right_Back ");
+		Serial.print(backDist);
+		Serial.print(" Inches, Right_Front ");
+		Serial.println(frontDist);
+		*/
+	} while (backDist > frontDist);
+	stop();
+	}
+
+void turnLeft45(int speed) {
+	int distance = TURN45;
+	setMotorSpeed(speed,speed, BACKWARD, FORWARD);
+	int prevVal = checkOdometry();
+	while (distance > 0){
+		int val = checkOdometry();
+		if (prevVal != val){
+			distance--;
+			prevVal = val;
+		}
+	}
+	setMotorSpeed(speed, speed, BRAKE, BRAKE);
+}
+
+void turnRight45(int speed) {
+	int distance = TURN45;
+	setMotorSpeed(speed,speed, FORWARD, BACKWARD);
+	int prevVal = checkOdometry();
+	while (distance > 0){
+		int val = checkOdometry();
+		if (prevVal != val){
+			distance--;
+			prevVal = val;
+		}
+	}
+	setMotorSpeed(speed, speed, BRAKE, BRAKE);
+}
+
+void turn180AlignRight(int speed) { 
+	int distance = TURN180 * 0.93;
+	setMotorSpeed(speed,speed, BACKWARD, FORWARD);
+	int prevVal = checkOdometry();
+	while (distance > 0){
+		int val = checkOdometry();
+		if (prevVal != val){
+			distance--;
+			prevVal = val;
+		}
+	}
+	float backDist, frontDist;
+	do {
+		backDist = readSonarDistance(RIGHT_BACK_PIN);
+		frontDist = readSonarDistance(RIGHT_FRONT_PIN);
+		/*Serial.print("Right_Back ");
+		Serial.print(backDist);
+		Serial.print("Inches, Right_Front ");
+		Serial.println(frontDist);*/
+	} while (backDist > frontDist);
+	setMotorSpeed(speed, speed, BRAKE, BRAKE);
+}
+
+
 void turnLeftUntil(int speed, int distance) { 
 	setMotorSpeed(speed,speed, BACKWARD, FORWARD);
 	int prevVal = checkOdometry();
@@ -279,7 +378,6 @@ void initialize() {
 
 
 
-
 void setMotorSpeed(int leftSpeed, int rightSpeed, int leftDir, int rightDir) {
 	  //Serial.print(leftSpeed); Serial.print(" "); Serial.print (rightSpeed); Serial.print("\n\n");
       leftMotor->setSpeed(leftSpeed);
@@ -307,7 +405,7 @@ void moveToCandle(int speed, int maxDistance) {
 	int prevVal = checkOdometry();
 	while (maxDistance > 0) {
 		// Serial.print("proximity ");Serial.println(readProximity());
-		if (readProximity()) break;
+		//if (readProximity()) break;
 		// Serial.print("Check_Odometry ");Serial.println(maxDistance);
 		int val = checkOdometry();
 		if (prevVal != val){
@@ -319,12 +417,21 @@ void moveToCandle(int speed, int maxDistance) {
 		int rightSpeed = speed;
 		int leftSpeed = speed;
 		if (left > right) {
-			leftSpeed *= CANDLE_ADJUST_PCT;
+			leftSpeed = CANDLE_ADJUST_PCT * speed;
 		}
 		else if (right > left) {
-			rightSpeed *= CANDLE_ADJUST_PCT;
+			rightSpeed = CANDLE_ADJUST_PCT * speed;
 		}
 		// Serial.println("Setting Speed");
+		/*Serial.print("Left Speed: "); 
+		Serial.print(leftSpeed);
+		Serial.print("	Right speed: ");
+		Serial.print(rightSpeed);
+		Serial.print("	Uv Left: ");
+		Serial.print(left);
+		Serial.print("	Uv Right: ");
+		Serial.println(right);
+		*/
 		setMotorSpeed(leftSpeed,rightSpeed,FORWARD,FORWARD);
 		delay(5);
 	}
@@ -332,7 +439,7 @@ void moveToCandle(int speed, int maxDistance) {
 	stop();
 }
 
-bool locateCandle(int speed, bool turnRight) {
+int locateCandle(int speed, bool turnRight) {
 	int found = 0;
 	int distance = TURN90;
 	int maxVal = 0;
@@ -346,14 +453,14 @@ bool locateCandle(int speed, bool turnRight) {
 	int prevVal = checkOdometry();
 	while (distance > 0){
 		if(turnRight) {
-			int val = analogRead(UV_RIGHT_PIN);
+			int val = max(analogRead(UV_LEFT_PIN),analogRead(UV_RIGHT_PIN));
 			if(val > maxVal){ 
 				maxVal = val;
 				angleAtMaxVal = distance;
 			}
 		}
 		else {
-			int val = analogRead(UV_LEFT_PIN);
+			int val = max(analogRead(UV_LEFT_PIN),analogRead(UV_RIGHT_PIN));
 			if(val > maxVal){ 
 				maxVal = val;
 				angleAtMaxVal = distance;
@@ -368,7 +475,7 @@ bool locateCandle(int speed, bool turnRight) {
 	if (maxVal < UV_THRESH) {
 		if (turnRight) turnRight90(speed);
 		else turnLeft90(speed);
-		return false;
+		return NO_CANDLE;
 	}
 	stop();
 	//reverse direction
@@ -394,7 +501,9 @@ bool locateCandle(int speed, bool turnRight) {
 		}
 	}
 	stop();
-	return true;
+	if (angleAtMaxVal <= .1 * TURN90) return TO_SIDE;
+	else if (angleAtMaxVal <= .8 * TURN90) return KIDDIE_CORNER;
+	else return STRAIGHT_AHEAD;
 }
 
 void fullStop() {
@@ -403,38 +512,38 @@ void fullStop() {
 	
 void startLedShow() {
 	digitalWrite(13,HIGH);
-	delay(100);
+	delay(1000);
 	digitalWrite(13,LOW);
-	delay(150);
+	delay(1500);
 	digitalWrite(13,HIGH);
-	delay(100);
+	delay(1000);
 	digitalWrite(13,LOW);
-	delay(150);
+	delay(1500);
 	digitalWrite(13,HIGH);
-	delay(100);
+	delay(1000);
 	digitalWrite(13,LOW);
-	delay(150);
+	delay(1500);
 	digitalWrite(13,HIGH);
-	delay(200);
+	delay(2000);
 	digitalWrite(13,LOW);
-	delay(150);
+	delay(1500);
 	digitalWrite(13,HIGH);
-	delay(200);
+	delay(2000);
 	digitalWrite(13,LOW);
-	delay(150);
+	delay(1500);
 	digitalWrite(13,HIGH);
-	delay(200);
+	delay(2000);
 	digitalWrite(13,LOW);
-	delay(150);
+	delay(1500);
 	digitalWrite(13,HIGH);
-	delay(100);
+	delay(1000);
 	digitalWrite(13,LOW);
-	delay(150);
+	delay(1500);
 	digitalWrite(13,HIGH);
-	delay(100);
+	delay(1000);
 	digitalWrite(13,LOW);
-	delay(150);
+	delay(1500);
 	digitalWrite(13,HIGH);
-	delay(100);
+	delay(1000);
 	digitalWrite(13,LOW);
 }

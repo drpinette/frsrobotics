@@ -29,20 +29,28 @@
 #define SLOW_SPEED 511
 #define SLOWMO_SPEED 255
 #define CANDLE_MOVE_SPEED 255
+#define ROOM_ENTER_SPEED 191
 #define CANDLE_LOCATE_SPEED 127
+#define TURN_ALIGN_SPEED 100
 #define TURN_ADJUST 30 //was 50 then 30 then 50 then 40 then 35
 
 #define CANDLE_ADJUST_PCT 0.75 //was 0.85 then 0.95 then 0.90 then 0.85 then 0.80 
-#define UV_THRESH 75 //was 200 then 60 then
+#define UV_THRESH 65 //was 200 then 60 then
 
 #define INTERSECTION_DISTANCE_THRESHOLD 11.0 
 #define LEAVING_INTERSECTION_DISTANCE_THRESHOLD 6.0 
 #define DEFAULT_NEAR_THRESHOLD 2.0 // prev thres #define DEFAULT_NEAR_THRESHOLD 4.0
 #define DEFAULT_FAR_THRESHOLD 4.0 // prev thres #define DEFAULT_FAR_THRESHOLD 6.0
 #define FOLLOW_OFFSET 1.0
+#define TURN45 15
 #define TURN90 31
-#define TURN180 64
+#define TURN180 63
 #define MOVE 5 //was 3 then 
+
+#define NO_CANDLE 0
+#define STRAIGHT_AHEAD 1
+#define KIDDIE_CORNER 2
+#define TO_SIDE 3
 
 // Code Starter
 void initialize() ;
@@ -63,7 +71,7 @@ int readUv() ;
 
 void moveToCandle(int speed, int maxDistance);
 
-bool locateCandle(int speed, bool turnRight);
+int locateCandle(int speed, bool turnRight);
 
 // Begin Mechanical variables
 
@@ -85,11 +93,21 @@ bool followRightWall(float nearDistance, float farDistance) ;
 
 bool followRightWall2(float nearDistance, float farDistance); 
 
+void turnLeft45(int speed) ;
+
+void turnRight45(int speed) ;
+
 void turnLeft90(int speed) ;
+
+void turnLeft90AlignRight(int speed=TURN_ALIGN_SPEED) ;
 
 void turnRight90(int speed) ;
 
+void turnRight90AlignLeft(int speed=TURN_ALIGN_SPEED) ;
+
 void turn180(int speed) ;
+
+void turn180AlignRight(int speed=TURN_ALIGN_SPEED) ;
 
 void turnLeftUntil(int speed, int distance) ; 
 

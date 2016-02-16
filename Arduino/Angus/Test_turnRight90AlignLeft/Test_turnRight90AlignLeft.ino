@@ -4,15 +4,14 @@
 
 void setup() {
   // put your setup code here, to run once:
-  initialize();
-  digitalWrite(13,HIGH);
-  delay(1000);
-  digitalWrite(13,LOW);
-  delay(4000); 
   Serial.begin(57600);
-  moveToCandle(MAX_MOTOR_SPEED, 10000);
+  initialize();
+  delay(5000);
+  
+  turnRight90AlignLeft(100);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
+
 }
