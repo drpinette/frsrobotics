@@ -8,7 +8,7 @@ void setup() {
   void runDoor1A();
   void runRoom2();
   void runRoom3();
-  void runRoom4();
+  void runRoom4a();
   // put your setup code here, to run once:
   Serial.begin(57600);
   initialize();
@@ -151,9 +151,17 @@ void setup() {
   setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
   do {
    float distance = readSonarDistance(RIGHT_BACK_PIN);
-   done = distance <  LEAVING_INTERSECTION_DISTANCE_THRESHOLD;
+   float distance2 = readSonarDistance(LEFT_BACK_PIN);
+   done = distance <  LEAVING_INTERSECTION_DISTANCE_THRESHOLD || distance2 <  LEAVING_INTERSECTION_DISTANCE_THRESHOLD;
   } while (!done);
   //digitalWrite(13,LOW);
+  
+  //check for room 4 door
+  if (readSonarDistance(LEFT_FRONT_PIN) > INTERSECTION_DISTANCE_THRESHOLD) {
+    stop();
+    runRoom4a();
+  }  
+  fullStop();
  
  //move past room 4 
   do {
@@ -319,16 +327,18 @@ void runRoom3(){
        move(10);
       stop();
       turnLeft90(SLOWMO_SPEED);
-      fullStop();
   }
   
 }
 
-void runRoom4() {
+void runRoom4a() {
   //move into room 4
+  move(10);
+  stop();
+  turnLeft90(ROOM_ENTER_SPEED);
   bool done;
+  setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
   do  {
-   followLeftWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);
    float distance = readSonarDistance(RIGHT_BACK_PIN);
    done = distance < INTERSECTION_DISTANCE_THRESHOLD;
   } while (!done);
@@ -337,9 +347,9 @@ void runRoom4() {
   stop();
   
   switch (locateCandle(CANDLE_LOCATE_SPEED,true)){
-    case 1: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 61); fullStop(); break;
-    case 2: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 72); fullStop(); break;
-    case 3: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 6); fullStop(); break; 
+    case 1: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 0); fullStop(); break;
+    case 2: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 5); fullStop(); break;
+    case 3: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 0); fullStop(); break; 
     case 0: 
        setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
        bool done;
@@ -351,7 +361,6 @@ void runRoom4() {
        move(10);
       stop();
       turnLeft90(SLOWMO_SPEED);
-      fullStop();
   }
   
 }
