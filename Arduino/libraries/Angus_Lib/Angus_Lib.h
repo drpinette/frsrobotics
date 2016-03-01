@@ -99,6 +99,8 @@ void turnRight45(int speed) ;
 
 void turnLeft90(int speed) ;
 
+void turnLeft90AlignLeft(int speed=TURN_ALIGN_SPEED) ;
+
 void turnLeft90AlignRight(int speed=TURN_ALIGN_SPEED) ;
 
 void turnRight90(int speed) ;

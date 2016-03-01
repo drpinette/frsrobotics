@@ -134,6 +134,30 @@ void turnLeft90AlignRight(int speed) {
 	stop();
 }
 
+void turnLeft90AlignLeft(int speed){
+int distance = TURN90 * 0.95;
+	setMotorSpeed(speed,speed, BACKWARD, FORWARD);
+	int prevVal = checkOdometry();
+	while (distance > 0){
+		int val = checkOdometry();
+		if (prevVal != val){
+			distance--;
+			prevVal = val;
+		}
+	}
+	float backDist, frontDist;
+	do {
+		backDist = readSonarDistance(LEFT_BACK_PIN);
+		frontDist = readSonarDistance(LEFT_FRONT_PIN);
+		/*Serial.print("Left_Back ");
+		Serial.print(backDist);
+		Serial.print(" Inches, Left_Front ");
+		Serial.println(frontDist);
+		*/
+	} while (backDist > frontDist);
+	stop();
+}
+
 void turnRight90AlignLeft(int speed) {
 	int distance = TURN90 * 0.95;
 	setMotorSpeed(speed,speed, FORWARD, BACKWARD);

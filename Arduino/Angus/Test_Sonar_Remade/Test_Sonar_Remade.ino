@@ -27,6 +27,6 @@ void loop() {
   Serial.print(inches3);
   Serial.print("Inches, Left_Back ");
   Serial.print(inches4); */
-  Serial.println();
+  Serial.println("Inches");
   delay(5);
 }
