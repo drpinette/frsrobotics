@@ -5,6 +5,7 @@
 #include <Adafruit_MotorShield.h>
 
 #define RIGHT_FRONT_PIN 11
+#define FRONT_PROXIMITY_PIN 10
 #define RIGHT_BACK_PIN 6
 #define LEFT_FRONT_PIN 7
 #define LEFT_BACK_PIN 5
@@ -15,7 +16,7 @@
 // analog pins
 #define UV_LEFT_PIN 0
 #define UV_RIGHT_PIN 1
-#define FRONT_PROXIMITY_PIN 2
+//#define FRONT_PROXIMITY_PIN 2
 
 #define WHITELINE_DIR INPUT_PULLUP
 #define ODOMETRY_DIR INPUT_PULLUP
@@ -24,14 +25,16 @@
 #define LEFT_MOTOR 3
 #define RIGHT_MOTOR 4
 
-#define MAX_MOTOR_SPEED 1023
-#define DEFAULT_SPEED 1023
-#define SLOW_SPEED 511
-#define SLOWMO_SPEED 255
+#define MAX_MOTOR_SPEED 255
+#define DEFAULT_SPEED 255
+#define SLOW_SPEED 127
+#define SLOWMO_SPEED 63
 #define CANDLE_MOVE_SPEED 255
-#define ROOM_ENTER_SPEED 191
+#define ROOM_ENTER_SPEED 150
 #define CANDLE_LOCATE_SPEED 127
 #define TURN_ALIGN_SPEED 100
+#define EDGE_DETECT_SPEED 110
+#define TURN_SPEED 150
 #define TURN_ADJUST 30 //was 50 then 30 then 50 then 40 then 35
 
 #define CANDLE_ADJUST_PCT 0.75 //was 0.85 then 0.95 then 0.90 then 0.85 then 0.80 
@@ -83,37 +86,39 @@ void setMotorSpeed(int leftSpeed, int rightSpeed, int leftDir, int rightDir);
 
 void move(int distance, int speed = DEFAULT_SPEED) ;
 
+bool moveUntilProximity(int distance, int speed=DEFAULT_SPEED);
+
 void moveBackwards() ;
 
 bool followLeftWall(float nearDistance, float farDistance) ;
 
-bool followLeftWall2(float nearDistance, float farDistance);
+bool followLeftWall2(float nearDistance, float farDistance, int speed=DEFAULT_SPEED, float threshold=INTERSECTION_DISTANCE_THRESHOLD);
 
 bool followRightWall(float nearDistance, float farDistance) ;
 
-bool followRightWall2(float nearDistance, float farDistance); 
+bool followRightWall2(float nearDistance, float farDistance, int speed=DEFAULT_SPEED, float threshold=INTERSECTION_DISTANCE_THRESHOLD); 
 
-void turnLeft45(int speed) ;
+void turnLeft45(int speed = TURN_SPEED) ;
 
-void turnRight45(int speed) ;
+void turnRight45(int speed = TURN_SPEED) ;
 
-void turnLeft90(int speed) ;
+void turnLeft90(int speed = TURN_SPEED) ;
 
 void turnLeft90AlignLeft(int speed=TURN_ALIGN_SPEED) ;
 
 void turnLeft90AlignRight(int speed=TURN_ALIGN_SPEED) ;
 
-void turnRight90(int speed) ;
+void turnRight90(int speed = TURN_SPEED) ;
 
 void turnRight90AlignLeft(int speed=TURN_ALIGN_SPEED) ;
 
-void turn180(int speed) ;
+void turn180(int speed = TURN_SPEED) ;
 
 void turn180AlignRight(int speed=TURN_ALIGN_SPEED) ;
 
-void turnLeftUntil(int speed, int distance) ; 
+void turnLeftUntil(int distance, int speed = TURN_SPEED) ; 
 
-void turnRightUntil(int speed, int distance) ; 
+void turnRightUntil(int distance, int speed = TURN_SPEED) ; 
 
 void alignLeftWall() ;
 

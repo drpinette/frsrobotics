@@ -44,13 +44,12 @@ float readSonarDistance(int pingPin) {
   // second).  This gives the distance travelled by the ping, outbound
   // and return, so we divide by 2 to get the distance of the obstacle.
   // See: http://www.parallax.com/dl/docs/prod/acc/28015-PING-v1.3.pdf
-  delay(25); 
+  delay(8); 
   return duration / 74 / 2;
 }
 
 bool readProximity() {
-  if (analogRead(FRONT_PROXIMITY_PIN) > 70) return true;  //... > value was 10 then 20 then 15
-  else return false;
+  return digitalRead(FRONT_PROXIMITY_PIN);
 }
 
 //returns value of uv detector 
@@ -83,6 +82,23 @@ void move(int distance, int speed) {
 	}
 } 
 
+bool moveUntilProximity(int distance, int speed) {
+	
+	setMotorSpeed(speed,speed, FORWARD, FORWARD);
+	int prevVal = checkOdometry();
+	int startDistance = distance;
+	while (distance > 0){
+		if(readProximity()) 
+			return true;
+		int val = checkOdometry();
+		if (prevVal != val){
+			distance--;
+			prevVal = val;
+		}
+	}
+	return false;
+} 
+
 void turnRight90(int speed) { 
 	int distance = TURN90;
 	setMotorSpeed(speed,speed, FORWARD, BACKWARD);
@@ -94,7 +110,7 @@ void turnRight90(int speed) {
 			prevVal = val;
 		}
 	}
-	setMotorSpeed(speed, speed, BRAKE, BRAKE);
+	stop();
 }
 
 void turnLeft90(int speed) { 
@@ -108,7 +124,7 @@ void turnLeft90(int speed) {
 			prevVal = val;
 		}
 	}
-	setMotorSpeed(speed, speed, BRAKE, BRAKE);
+	stop();
 }
 
 void turnLeft90AlignRight(int speed) { 
@@ -234,7 +250,7 @@ void turn180AlignRight(int speed) {
 }
 
 
-void turnLeftUntil(int speed, int distance) { 
+void turnLeftUntil(int distance, int speed) { 
 	setMotorSpeed(speed,speed, BACKWARD, FORWARD);
 	int prevVal = checkOdometry();
 	while (distance > 0){
@@ -246,7 +262,7 @@ void turnLeftUntil(int speed, int distance) {
 	}
 }
 
-void turnRightUntil(int speed, int distance) { 
+void turnRightUntil(int distance, int speed) { 
 	setMotorSpeed(speed,speed, FORWARD, BACKWARD);
 	int prevVal = checkOdometry();
 	while (distance > 0){
@@ -293,9 +309,9 @@ bool followLeftWall(float nearDistance, float farDistance) {
 	return backDist < INTERSECTION_DISTANCE_THRESHOLD;
 }
 
-bool followLeftWall2(float nearDistance, float farDistance){
+bool followLeftWall2(float nearDistance, float farDistance, int speed, float threshold){
     float frontDist = readSonarDistance(LEFT_FRONT_PIN); 
-    if (frontDist > INTERSECTION_DISTANCE_THRESHOLD) return true;
+    if (frontDist > threshold) return true;
     float backDist = readSonarDistance(LEFT_BACK_PIN); 
     float distance = (backDist + frontDist) / 2;
 	float offset;
@@ -311,15 +327,15 @@ bool followLeftWall2(float nearDistance, float farDistance){
 	 Serial.print("farDistance "); Serial.print(farDistance); Serial.print("\n\n");
 	*/
     if ((frontDist - backDist) > offset ) {
-         setMotorSpeed(DEFAULT_SPEED-TURN_ADJUST, DEFAULT_SPEED,
+         setMotorSpeed(speed-TURN_ADJUST, speed,
 				FORWARD, FORWARD);
     }
     else if ((frontDist - backDist)< offset ){
-        setMotorSpeed(DEFAULT_SPEED, DEFAULT_SPEED-TURN_ADJUST,
+        setMotorSpeed(speed, speed-TURN_ADJUST,
                 FORWARD, FORWARD);
     }
     else {
-        setMotorSpeed(DEFAULT_SPEED, DEFAULT_SPEED,
+        setMotorSpeed(speed, speed,
                 FORWARD, FORWARD);
     }
 	return false;
@@ -346,9 +362,9 @@ bool followRightWall(float nearDistance, float farDistance){
 	return frontDist < INTERSECTION_DISTANCE_THRESHOLD;
 }
 
-bool followRightWall2(float nearDistance, float farDistance){
+bool followRightWall2(float nearDistance, float farDistance, int speed, float threshold){
     float frontDist = readSonarDistance(RIGHT_FRONT_PIN); 
-    if (frontDist > INTERSECTION_DISTANCE_THRESHOLD) return true;    
+    if (frontDist > threshold) return true;    
 	float backDist = readSonarDistance(RIGHT_BACK_PIN); 
     float distance = (frontDist + backDist) / 2;
 	float offset;
@@ -366,17 +382,17 @@ bool followRightWall2(float nearDistance, float farDistance){
 	
     if ((frontDist - backDist) > offset ) {
 		//Serial.print("Right_Turn "); Serial.print(frontDist-backDist); Serial.print("\n");
-         setMotorSpeed(DEFAULT_SPEED, DEFAULT_SPEED-TURN_ADJUST,
+         setMotorSpeed(speed, speed-TURN_ADJUST,
 				FORWARD, FORWARD);
     }
     else if ((frontDist - backDist)< offset ){ 
 	  // Serial.print("Left_Turn "); Serial.print(frontDist-backDist); Serial.print("\n");
-		setMotorSpeed(DEFAULT_SPEED-TURN_ADJUST, DEFAULT_SPEED,
+		setMotorSpeed(speed-TURN_ADJUST, speed,
                 FORWARD, FORWARD);
     }
     else {
 	   //Serial.print("No_Turn "); Serial.print(frontDist-backDist); Serial.print("\n");
-        setMotorSpeed(DEFAULT_SPEED, DEFAULT_SPEED,
+        setMotorSpeed(speed, speed,
                 FORWARD, FORWARD);
     }
 	
@@ -497,17 +513,17 @@ int locateCandle(int speed, bool turnRight) {
 		}
 	}
 	if (maxVal < UV_THRESH) {
-		if (turnRight) turnRight90(speed);
-		else turnLeft90(speed);
+		if (turnRight) turnRight90();
+		else turnLeft90();
 		return NO_CANDLE;
 	}
 	stop();
 	//reverse direction
 	if (turnRight) {
-		turnLeftUntil(speed,angleAtMaxVal);
+		turnLeftUntil(angleAtMaxVal);
 	}
 	else{
-		turnRightUntil(speed,angleAtMaxVal);
+		turnRightUntil(angleAtMaxVal);
 	}
 	// put candle in middle of sensors
 	while (true) {

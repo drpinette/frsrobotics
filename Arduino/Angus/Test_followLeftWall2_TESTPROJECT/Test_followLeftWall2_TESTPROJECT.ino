@@ -17,5 +17,5 @@ bool done = false;
 void loop() {
   // put your main code here, to run repeatedly:
   
- followLeftWall2(DEFAULT_FAR_THRESHOLD,DEFAULT_NEAR_THRESHOLD);
+ followLeftWall2(DEFAULT_FAR_THRESHOLD,DEFAULT_NEAR_THRESHOLD, DEFAULT_SPEED);
 }
