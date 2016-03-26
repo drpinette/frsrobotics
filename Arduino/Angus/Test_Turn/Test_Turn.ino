@@ -4,13 +4,14 @@
 
 void setup() {
   initialize();
+  waitForPushButton();
   delay(1000);
 }
 
 void loop() {
   //turnLeft90(MAX_MOTOR_SPEED/2);
   //turn180(MAX_MOTOR_SPEED/2);
-  turnRight90(MAX_MOTOR_SPEED/2);
-  delay (4000);
+  turnLeft90(MAX_MOTOR_SPEED/2);
+  delay (3000);
 
 }

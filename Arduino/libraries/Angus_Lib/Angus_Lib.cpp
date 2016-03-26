@@ -7,6 +7,28 @@ Adafruit_MotorShield AFMS = Adafruit_MotorShield();
 Adafruit_DCMotor* leftMotor = AFMS.getMotor(LEFT_MOTOR);
 Adafruit_DCMotor* rightMotor = AFMS.getMotor(RIGHT_MOTOR);
 
+
+//pause the program until BUTTON_PIN reads HIGH
+void waitForPushButton(){	
+	while(analogRead(BUTTON_PIN) <= 900){
+		digitalWrite(13, HIGH);
+		Serial.println(analogRead(BUTTON_PIN));
+		delay(100);
+	}
+	digitalWrite(13, LOW);
+}
+
+bool checkForDog(int angle){
+    if (readProximity()) return true;
+    turnRightUntil(angle);
+	if (readProximity()) return true;
+    turnLeftUntil(angle * 2);
+	if (readProximity()) return true;
+	turnRightUntil(angle);
+	return false;
+}
+
+
 // returns 1 if whiteline, else 0
 int isWhiteLine() {
     return digitalRead(WHITELINE_PIN);
@@ -49,7 +71,10 @@ float readSonarDistance(int pingPin) {
 }
 
 bool readProximity() {
-  return digitalRead(FRONT_PROXIMITY_PIN);
+  pinMode(FRONT_PROXIMITY_PIN,INPUT_PULLUP);
+  bool found = digitalRead(FRONT_PROXIMITY_PIN);
+  digitalWrite(13, found);
+  return found;
 }
 
 //returns value of uv detector 
@@ -59,8 +84,20 @@ int readUv()
 }
 
 //turns extinguisher on if onOff is 1, else turns off if 0
-void extinguish (int onOff) {
+void extinguish (bool onOff) {
+
+	if(onOff){
+	digitalWrite(4, HIGH);
+	digitalWrite(13, HIGH);
+	}
+	else{
+	digitalWrite(4, LOW);
+	digitalWrite(13, LOW);
+	}
+
 }
+
+
 
 //arr[0] has ambient temperature
 //other elememets have temperature readings
@@ -113,8 +150,8 @@ void turnRight90(int speed) {
 	stop();
 }
 
-void turnLeft90(int speed) { 
-	int distance = TURN90;
+void turnLeft90(int speed, int numTicks) { 
+	int distance = numTicks;
 	setMotorSpeed(speed,speed, BACKWARD, FORWARD);
 	int prevVal = checkOdometry();
 	while (distance > 0){

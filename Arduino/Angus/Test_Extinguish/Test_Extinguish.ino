@@ -1,4 +1,6 @@
 #include <Angus_Lib.h>
+#include <Adafruit_MotorShield.h>
+#include <Wire.h>
 
 void setup() {
   initialize();

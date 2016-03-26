@@ -16,6 +16,7 @@
 // analog pins
 #define UV_LEFT_PIN 0
 #define UV_RIGHT_PIN 1
+#define BUTTON_PIN 3
 //#define FRONT_PROXIMITY_PIN 2
 
 #define WHITELINE_DIR INPUT_PULLUP
@@ -42,6 +43,7 @@
 
 #define INTERSECTION_DISTANCE_THRESHOLD 11.0 
 #define LEAVING_INTERSECTION_DISTANCE_THRESHOLD 6.0 
+#define ROOM4_SIDE_CORRIDER_DISTANCE_THRESHOLD 15.0
 #define DEFAULT_NEAR_THRESHOLD 2.0 // prev thres #define DEFAULT_NEAR_THRESHOLD 4.0
 #define DEFAULT_FAR_THRESHOLD 4.0 // prev thres #define DEFAULT_FAR_THRESHOLD 6.0
 #define FOLLOW_OFFSET 1.0
@@ -60,7 +62,11 @@ void initialize() ;
 void startLedShow() ;
 
 // Sensors/Detectors variables
+void waitForPushButton() ; 
+
 int isWhiteLine() ;
+
+bool checkForDog(int angle) ;
 
 int checkOdometry() ;
 
@@ -78,7 +84,7 @@ int locateCandle(int speed, bool turnRight);
 
 // Begin Mechanical variables
 
-void extinguish (int onOff) ;
+void extinguish (bool onOff) ;
 
 void setMotorSpeed(int leftSpeed, int rightSpeed, int leftDir, int rightDir);
 
@@ -102,7 +108,7 @@ void turnLeft45(int speed = TURN_SPEED) ;
 
 void turnRight45(int speed = TURN_SPEED) ;
 
-void turnLeft90(int speed = TURN_SPEED) ;
+void turnLeft90(int speed = TURN_SPEED, int numTicks = TURN90) ;
 
 void turnLeft90AlignLeft(int speed=TURN_ALIGN_SPEED) ;
 
