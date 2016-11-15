@@ -15,18 +15,18 @@ void setup() {
 void loop() {
   //put your main code here, to run repeatedly:
   float inches = readSonarDistance(RIGHT_FRONT_PIN);
-  delay(5);
-  //float inches3 = readSonarDistance(LEFT_FRONT_PIN);
- float inches2 = readSonarDistance(RIGHT_BACK_PIN);
- // float inches4 = readSonarDistance(LEFT_BACK_PIN);
+  //delay(5);
+  float inches3 = readSonarDistance(LEFT_FRONT_PIN);
+  float inches2 = readSonarDistance(RIGHT_BACK_PIN);
+  float inches4 = readSonarDistance(LEFT_BACK_PIN);
   Serial.print("Right_Front ");
   Serial.print(inches);
   Serial.print("Inches, Right_Back ");
   Serial.print(inches2);
- /* Serial.print("Inches, Left_Front ");
+  Serial.print("Inches, Left_Front ");
   Serial.print(inches3);
   Serial.print("Inches, Left_Back ");
-  Serial.print(inches4); */
+  Serial.print(inches4);
   Serial.println("Inches");
   delay(5);
 }

@@ -4,12 +4,13 @@
 
 void setup() {
   initialize();
-  extinguish(1);
-  delay(1000);
-  extinguish(0);
+  
 
 }
 
 void loop() {
-
+digitalWrite(11, HIGH);
+  delay(1000);
+  digitalWrite(11, LOW);
+  delay(1000);
 }

@@ -70,15 +70,21 @@ void setup() {
     Serial.print("avg d4 ");Serial.println(((float)d4) / 100.0);
     Serial.print("avg duration ");Serial.println(((float)sumDuration) / 100.0);
     Serial.print("avg d5 ");Serial.println(((float)d5) / 100.0);
+    */
 }
-*/
+
 void loop() {
   // put your main code here, to run repeatedly:
-  /*float inches = readSonarDistance(RIGHT_BACK_PIN);
-  Serial.print(inches);
-  Serial.print("in,");
+  Serial.print(readSonarDistance(RIGHT_BACK_PIN));
+  Serial.print("     Right back pin\n");
+  /*Serial.print(readSonarDistance(LEFT_BACK_PIN));
+  Serial.print("     Left back pin\n");
+  Serial.print(readSonarDistance(LEFT_FRONT_PIN));
+  Serial.print("     Left front pin\n");
+  Serial.print(readSonarDistance(RIGHT_FRONT_PIN));
+  Serial.print("     Right front pin\n");*/
   Serial.println();
-  delay(5);*/
+  delay(1000);
 }
 
 

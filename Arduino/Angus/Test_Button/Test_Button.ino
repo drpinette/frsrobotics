@@ -4,16 +4,18 @@
 
 void setup() {
   // put your setup code here, to run once:
+  pinMode(A3, INPUT);
+  Serial.begin(57600);
   initialize();
-  digitalWrite(13,HIGH);
-  delay(500);
-  digitalWrite(13,LOW);
-  Serial.begin(9600);
+  delay(1000);
+  if();
+    digitalWrite(13, HIGH);
+    delay(500);
+    digitalWrite(13, LOW);
   
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  
- followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD, DEFAULT_SPEED);
+
 }

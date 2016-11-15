@@ -7,7 +7,7 @@ void setup() {
   initialize(); 
   Serial.begin(9600);
   delay(3000);
-  locateCandle(SLOW_SPEED, true);
+  locateCandle(CANDLE_LOCATE_SPEED, true);
 }
 
 void loop() {

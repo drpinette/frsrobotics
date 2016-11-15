@@ -2,8 +2,6 @@
 #include <Wire.h>
 #include <Angus_Lib.h>
 
-
-
 void setup() {
   pinMode(A5, INPUT);
   void runRoom1DoorA();
@@ -13,111 +11,65 @@ void setup() {
   void runRoom4a();
   void runRoom4b();
   void runRoom4c();
+  void moveBackwards(int distance, int speed=DEFAULT_SPEED) ;
   // put your setup code here, to run once:
   Serial.begin(57600);
   initialize();
-  //waitForStart3();
-  digitalWrite(13, HIGH);
+  waitForStart();
   delay(1000);
-  digitalWrite(13, LOW);
-  delay(1000);
+  
+  int counter = 0;
   
   bool done;
+  bool foundDog = false;
+  bool foundDoor = false;
+  
   float distance3 = readSonarDistance(RIGHT_FRONT_PIN);
-  if (distance3 > INTERSECTION_DISTANCE_THRESHOLD) {
-    fullStop();
+  if (distance3 < INTERSECTION_DISTANCE_THRESHOLD) {
+     turnLeft90AlignLeft(DEFAULT_SPEED);
+  }
+  
+  if(readProximity()){
+   turnRight90AlignRight(); 
   }
   else{
-    //turnLeft90(DEFAULT_SPEED);
-    turnLeft90AlignLeft(DEFAULT_SPEED);
-    
-  }
- 
-  
-  //explore the side
-  //bool foundDog = moveUntilProximity(40);
-  bool foundDog = readProximity();
-  bool foundDoor = false;
-  if (!foundDog) {
-    // move out of intersection
+    int prevVal = checkOdometry();
     do {
+      int val = checkOdometry();
       followLeftWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD, DEFAULT_SPEED);
       float frontDistance = readSonarDistance(RIGHT_FRONT_PIN);
       done = frontDistance < INTERSECTION_DISTANCE_THRESHOLD;
-    } while(!done);
-    stop();
-    if (readProximity()) {
-      foundDog = true;
-    }
-    else {
-      turnRightUntil(2);
-      if (readProximity()) {
-        foundDog = true;
+      foundDog = readProximity();
+      if (prevVal != val){
+  	counter++;
+	prevVal = val;
       }
-      else {
-         turnLeftUntil(4);
-         if (readProximity()) {
-            foundDog = true;
-         }
-         else {
-           turnRightUntil(2);
-           foundDog = false;
-         }
-      }
-    } 
-    if (foundDog) { 
-      turn180();
-      move(15);
-      stop();
-      turnLeft90();
-    }
-    else{
-    // look for door
-      move(80);
-      float frontDistance = readSonarDistance(RIGHT_FRONT_PIN);
-      foundDoor = frontDistance > ROOM4_SIDE_CORRIDER_DISTANCE_THRESHOLD;
-      if (foundDoor) {
-        do {
-          float rearDistance = readSonarDistance(RIGHT_BACK_PIN);
-          done = rearDistance > ROOM4_SIDE_CORRIDER_DISTANCE_THRESHOLD;
-        } while(!done);
-        runRoom4c();
-      }
-      else{
-        stop();
-        turn180AlignRight(); 
-        do {
-           followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD, DEFAULT_SPEED);
-           float distance = readSonarDistance(LEFT_BACK_PIN);
-           done = distance >  ROOM4_SIDE_CORRIDER_DISTANCE_THRESHOLD;  
-           } while (!done);
-           move(10);
-         turnLeft90AlignRight();
-      }
-      do  {
-          followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);
-          float distance = readSonarDistance(LEFT_BACK_PIN);
-          done = distance < INTERSECTION_DISTANCE_THRESHOLD;
-      } while (!done);  
-      do  {
-          followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);
-          float distance = readSonarDistance(LEFT_BACK_PIN);
-          done = distance > INTERSECTION_DISTANCE_THRESHOLD;
-      } while (!done);  
-      move(10);
-      turnLeft90AlignRight(); 
-    }
-  }
-  else{
-    turnRight90();
+    } while(!done && !foundDog);
   }
   
-  setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
+  if (foundDog){
+      moveBackwards(counter);
+      stop();
+      turnRight90AlignRight();
+  }
+  else{
+     move(80);
+     float frontDistance = readSonarDistance(RIGHT_FRONT_PIN);
+     foundDoor = frontDistance > ROOM4_SIDE_CORRIDER_DISTANCE_THRESHOLD;
+     if (foundDoor) {
+        do {
+           float rearDistance = readSonarDistance(RIGHT_BACK_PIN);
+           done = rearDistance > ROOM4_SIDE_CORRIDER_DISTANCE_THRESHOLD;
+        } while(!done);
+     runRoom4c();
+  }
+}
+
+//at home
   do {
    done = followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);  
   } while (!done);
   //digitalWrite(13,HIGH); //debug, remove for actual competition
-  
   
   //Move into intersection
   setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
@@ -142,14 +94,15 @@ void setup() {
   do  {
    float backDistance = readSonarDistance(LEFT_BACK_PIN);
    done = backDistance < INTERSECTION_DISTANCE_THRESHOLD;
-   float frontDistance = readSonarDistance(LEFT_FRONT_PIN);
-   isDoorA |= frontDistance > INTERSECTION_DISTANCE_THRESHOLD;
+   //float frontDistance = readSonarDistance(LEFT_FRONT_PIN);
+   //isDoorA |= frontDistance > INTERSECTION_DISTANCE_THRESHOLD;
   } while (!done);
-  //digitalWrite(13,LOW); //debug, remove for actual competition
   
-  //Check Room 1 Door A
- 
   move(23);
+  float frontDistance = readSonarDistance(LEFT_FRONT_PIN);
+  isDoorA |= frontDistance > INTERSECTION_DISTANCE_THRESHOLD;
+  //digitalWrite(13,isDoorA); //debug, remove for actual competition
+  //Check Room 1 Door A
   
   if (isDoorA){
     runRoom1DoorA();
@@ -232,6 +185,7 @@ void setup() {
    float distance = readSonarDistance(RIGHT_BACK_PIN);
    done = distance > INTERSECTION_DISTANCE_THRESHOLD;
   } while (!done);
+  move(25);
   //digitalWrite(13,LOW);
   //turn for Door/Room 4
   stop();
@@ -344,9 +298,9 @@ void runRoom1DoorA() {
   //Look for candle
   stop();
   switch (locateCandle(CANDLE_LOCATE_SPEED,true)){
-    case 1: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED,16); fullStop(); break;
-    case 2: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED,161); fullStop(); break;
-    case 3: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 50); fullStop(); break; 
+    case 1: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED,16); extinguish(); fullStop(); break;
+    case 2: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED,158); extinguish(); fullStop(); break;
+    case 3: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 55); extinguish(); fullStop(); break; 
     case 0: setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
         do  {
            float distance = readSonarDistance(RIGHT_BACK_PIN);
@@ -359,7 +313,6 @@ void runRoom1DoorA() {
 }
 
 void runRoom1DoorB() {
-  fullStop();
   // move into doorway
   move(23, DEFAULT_SPEED);
   // entering room
@@ -380,9 +333,9 @@ void runRoom1DoorB() {
   //Look for candle
   stop();
   switch (locateCandle(CANDLE_LOCATE_SPEED,false)){
-    case 1: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED,130); fullStop(); break;
-    case 2: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED,0); fullStop(); break;
-    case 3: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 72); fullStop(); break; 
+    case 1: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED,130); extinguish(); fullStop(); break;
+    case 2: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED,0); extinguish(); fullStop(); break;
+    case 3: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 72); extinguish(); fullStop(); break; 
     case 0: setMotorSpeed(100,100,FORWARD,FORWARD);
         do  {
            followLeftWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD, EDGE_DETECT_SPEED);
@@ -414,9 +367,9 @@ void runRoom2(){
   stop();
   
   switch (locateCandle(CANDLE_LOCATE_SPEED,true)){
-    case 1: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 25); fullStop(); break;
-    case 2: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 94); fullStop(); break;
-    case 3: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 78); fullStop(); break; 
+    case 1: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 25); extinguish(); fullStop(); break;
+    case 2: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 115); extinguish(); fullStop(); break;
+    case 3: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 88); extinguish(); fullStop(); break; 
     case 0: 
        setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
        bool done;
@@ -445,9 +398,9 @@ void runRoom3(){
   stop();
   
   switch (locateCandle(CANDLE_LOCATE_SPEED,true)){
-    case 1: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 61); fullStop(); break;
-    case 2: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 72); fullStop(); break;
-    case 3: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 6); fullStop(); break; 
+    case 1: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 61); extinguish(); fullStop(); break;
+    case 2: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 72); extinguish(); fullStop(); break;
+    case 3: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 10); extinguish(); fullStop(); break; 
     case 0: 
        setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
        bool done;
@@ -479,9 +432,9 @@ void runRoom4a() {
   stop();
   
   switch (locateCandle(CANDLE_LOCATE_SPEED,true)){
-    case 1: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 0); fullStop(); break;
-    case 2: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 5); fullStop(); break;
-    case 3: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 0); fullStop(); break; 
+    case 1: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 0); extinguish(); fullStop(); break;
+    case 2: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 10); extinguish(); fullStop(); break;
+    case 3: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 10); extinguish(); fullStop(); break; 
     case 0: fullStop();  break; 
   }
   
@@ -495,7 +448,7 @@ void runRoom4b() {
   bool done;
   setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
   do  {
-   float distance = readSonarDistance(RIGHT_BACK_PIN);
+   float distance = readSonarDistance(LEFT_BACK_PIN);
    done = distance < INTERSECTION_DISTANCE_THRESHOLD;
   } while (!done);
   move(15, DEFAULT_SPEED);
@@ -503,9 +456,9 @@ void runRoom4b() {
   stop();
   
   switch (locateCandle(CANDLE_LOCATE_SPEED,true)){
-    case 1: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 0); fullStop(); break;
-    case 2: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 5); fullStop(); break;
-    case 3: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 0); fullStop(); break;
+    case 1: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 0); extinguish(); fullStop(); break;
+    case 2: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 10); extinguish(); fullStop(); break;
+    case 3: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 10); extinguish(); fullStop(); break;
     case 0: fullStop();  break; 
   }
 }
@@ -526,9 +479,9 @@ void runRoom4c() {
   stop();
   //look for candle
   switch (locateCandle(CANDLE_LOCATE_SPEED,true)){
-    case 1: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 0); fullStop(); break;
-    case 2: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 5); fullStop(); break;
-    case 3: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 0); fullStop(); break;
+    case 1: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 0); extinguish(); fullStop(); break;
+    case 2: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 10); extinguish(); fullStop(); break;
+    case 3: digitalWrite(13,HIGH); moveToCandle(CANDLE_MOVE_SPEED, 10); extinguish(); fullStop(); break;
     case 0: break; }
       setMotorSpeed(DEFAULT_SPEED,DEFAULT_SPEED,FORWARD,FORWARD);
       do  {
@@ -537,8 +490,21 @@ void runRoom4c() {
       }while (!done);
      
        move (15);
-       turnLeft90AlignRight();
+       turnLeft90(150, 42);
+      do  {
+          followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);
+          float distance = readSonarDistance(LEFT_BACK_PIN);
+          done = distance < INTERSECTION_DISTANCE_THRESHOLD;
+      } while (!done);  
+      do  {
+          followRightWall2(DEFAULT_NEAR_THRESHOLD,DEFAULT_FAR_THRESHOLD);
+          float distance = readSonarDistance(LEFT_BACK_PIN);
+          done = distance > INTERSECTION_DISTANCE_THRESHOLD;
+      } while (!done);  
+      move(10);
+      turnLeft90AlignRight(); 
 }
+
 
 
 

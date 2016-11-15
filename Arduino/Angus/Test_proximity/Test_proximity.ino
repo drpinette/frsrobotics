@@ -6,16 +6,17 @@ void setup() {
   // put your setup code here, to run once:
   //initialize();
   Serial.begin(9600);
+  pinMode(FRONT_PROXIMITY_PIN1,INPUT_PULLUP);
+  pinMode(FRONT_PROXIMITY_PIN2,INPUT_PULLUP);
+  pinMode(FRONT_PROXIMITY_PIN3,INPUT_PULLUP);
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
   //=====Test Code (17/03/2015) (DD/MM/YYYY)=====
-  bool ok = readProximity();
-  if (ok) {
-  digitalWrite(13, HIGH); }
-  else{
-  digitalWrite(13, LOW); }
+  Serial.print(digitalRead(FRONT_PROXIMITY_PIN1));
+  Serial.print(digitalRead(FRONT_PROXIMITY_PIN2));
+  Serial.println(digitalRead(FRONT_PROXIMITY_PIN3));
   //else (digitalWrite(13,LOW));
-  delay(50);
+  delay(10);
 }

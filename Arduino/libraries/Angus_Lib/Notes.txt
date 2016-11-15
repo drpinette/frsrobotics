@@ -1,1 +1,3 @@
-Work on Room 4 when dog is false
+To do list for Tuesday
+1. Replace wires on 2nd layer
+2. Run Robot in maize

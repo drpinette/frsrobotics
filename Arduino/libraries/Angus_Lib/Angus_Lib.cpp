@@ -8,18 +8,141 @@ Adafruit_DCMotor* leftMotor = AFMS.getMotor(LEFT_MOTOR);
 Adafruit_DCMotor* rightMotor = AFMS.getMotor(RIGHT_MOTOR);
 
 
+
 //pause the program until BUTTON_PIN reads HIGH
-void waitForPushButton(){	
-	while(analogRead(BUTTON_PIN) <= 900){
-		digitalWrite(13, HIGH);
-		Serial.println(analogRead(BUTTON_PIN));
-		delay(100);
+void button(){
+
+}
+
+void waitForStart(){
+	//analogWrite(SITUATION_PIN, 0);
+	int count=0;
+	bool stayInLoop = false;
+	while(!stayInLoop){
+		if(analogRead(SOUND_PIN)>300){
+			for (int i = 0; i < 400; i++){
+				Serial.println(count);
+				delay(5);
+				if(analogRead(SOUND_PIN)>300){
+					count++;
+					}
+				if(count>200){
+					stayInLoop = true;
+				}
+			}
+			count = 0;
+		}
+		delay(5);
 	}
-	digitalWrite(13, LOW);
+	//analogWrite(SITUATION_PIN, 255);
+}
+
+void waitForStart2(){
+	int count=0;
+	while(true){
+		if(analogRead(SOUND_PIN)>300){
+			for (int i = 0; i < 400; i++){
+				delay(5);
+				if(analogRead(SOUND_PIN)>300){
+					count++;
+					}
+				}
+			}
+			Serial.println(count);
+			if(count > 100 && count < 228) break;
+			count = 0;
+		}
+		delay(5);
+	}
+	
+	void waitForStart3(){
+	int count=0;
+	float average = 0;
+	//digitalWrite(13, HIGH);
+	while(true){
+		if(analogRead(SOUND_PIN)>300){
+			for (int i = 0; i < 400; i++){
+				average += analogRead(SOUND_PIN);
+			}
+			average /= 400;
+			count = 0;
+			int lastVal = analogRead(SOUND_PIN);
+			for(int i=0; i<1000; i++){
+				int currentVal = analogRead(SOUND_PIN);
+				if(lastVal < average){
+					if(currentVal > average){
+						count++;
+						lastVal = currentVal;
+					}
+				}
+				else{
+					if(currentVal < average){
+						count++;
+						lastVal = currentVal;
+					}
+				}
+			}
+			Serial.println(count);
+			if(count > 750 && count < 850) break;
+		}
+	}
+	//digitalWrite(13, LOW);
+	}
+
+/*void waitForStart(){
+	int NUM_SAMPLES = 500;
+	unsigned char samples[NUM_SAMPLES];
+	for(int i=0; i<NUM_SAMPLES; i++){
+		samples[i] = 0;
+	}
+	while(analogRead(SOUND_PIN) <= 300){
+		if(analogRead(BUTTON_PIN <= 900)) return;
+	}
+	for(int i=0; i<NUM_SAMPLES; i++){
+		//if(analogRead(BUTTON_PIN) >= 1000) return;
+		samples[i] = (unsigned char) analogRead(SOUND_PIN);
+	}
+	
+	float average;
+	
+	for(int i=0; i<NUM_SAMPLES; i++){
+		average += (float) samples[i];
+	}
+	
+	average /= NUM_SAMPLES;
+	
+	int count = 0;
+	unsigned char lastVal = samples[0];
+	for(int i=0; i<NUM_SAMPLES; i++){
+		if(lastVal > 0){
+			if(samples[i] < (unsigned char) average){
+				lastVal = samples[i];
+				count++;
+			}
+		}
+		else{
+			if(samples[i] > (unsigned char) average){
+				lastVal = samples[i];
+				count++;
+			}
+		}
+	}
+	Serial.println(count);
+}
+*/
+
+bool findDog(int *howFarMoved){
+	*howFarMoved = 0;
+	if(readProximity()) return true;
+	move(15);
+	*howFarMoved = 15;
+	return readProximity();
 }
 
 bool checkForDog(int angle){
-    if (readProximity()) return true;
+    
+	
+	if (readProximity()) return true;
     turnRightUntil(angle);
 	if (readProximity()) return true;
     turnLeftUntil(angle * 2);
@@ -71,10 +194,11 @@ float readSonarDistance(int pingPin) {
 }
 
 bool readProximity() {
-  pinMode(FRONT_PROXIMITY_PIN,INPUT_PULLUP);
-  bool found = digitalRead(FRONT_PROXIMITY_PIN);
-  digitalWrite(13, found);
-  return found;
+  pinMode(FRONT_PROXIMITY_PIN1,INPUT_PULLUP);
+  pinMode(FRONT_PROXIMITY_PIN2,INPUT_PULLUP);
+  pinMode(FRONT_PROXIMITY_PIN3,INPUT_PULLUP);
+  
+  return digitalRead(FRONT_PROXIMITY_PIN1) || digitalRead(FRONT_PROXIMITY_PIN2) || digitalRead(FRONT_PROXIMITY_PIN3);
 }
 
 //returns value of uv detector 
@@ -84,17 +208,10 @@ int readUv()
 }
 
 //turns extinguisher on if onOff is 1, else turns off if 0
-void extinguish (bool onOff) {
-
-	if(onOff){
-	digitalWrite(4, HIGH);
-	digitalWrite(13, HIGH);
-	}
-	else{
-	digitalWrite(4, LOW);
-	digitalWrite(13, LOW);
-	}
-
+void extinguish () {
+	digitalWrite(EXTINGUISHER_PIN, HIGH);
+	delay(2500);
+	digitalWrite(EXTINGUISHER_PIN, LOW);
 }
 
 
@@ -102,13 +219,25 @@ void extinguish (bool onOff) {
 //arr[0] has ambient temperature
 //other elememets have temperature readings
 // arr[1] is on left
-void readThermalArray(int* arr) {
+void readThermalsamples(int* arr) {
 }
 
 //Movement Subroutine
 
 void move(int distance, int speed) {
 	setMotorSpeed(speed,speed, FORWARD, FORWARD);
+	int prevVal = checkOdometry();
+	while (distance > 0){
+		int val = checkOdometry();
+		if (prevVal != val){
+			distance--;
+			prevVal = val;
+		}
+	}
+} 
+
+void moveBackwards(int distance, int speed) {
+	setMotorSpeed(speed, speed, BACKWARD, BACKWARD);
 	int prevVal = checkOdometry();
 	while (distance > 0){
 		int val = checkOdometry();
@@ -178,7 +307,9 @@ void turnLeft90AlignRight(int speed) {
 	float backDist, frontDist;
 	do {
 		backDist = readSonarDistance(RIGHT_BACK_PIN);
+		delay(10);
 		frontDist = readSonarDistance(RIGHT_FRONT_PIN);
+		delay(10);
 		/*Serial.print("Right_Back ");
 		Serial.print(backDist);
 		Serial.print("Inches, Right_Front ");
@@ -201,7 +332,9 @@ int distance = TURN90 * 0.95;
 	float backDist, frontDist;
 	do {
 		backDist = readSonarDistance(LEFT_BACK_PIN);
+		delay(10);
 		frontDist = readSonarDistance(LEFT_FRONT_PIN);
+		delay(10);
 		/*Serial.print("Left_Back ");
 		Serial.print(backDist);
 		Serial.print(" Inches, Left_Front ");
@@ -225,13 +358,41 @@ void turnRight90AlignLeft(int speed) {
 	float backDist, frontDist;
 	do {
 		backDist = readSonarDistance(LEFT_BACK_PIN);
+		delay(10);
 		frontDist = readSonarDistance(LEFT_FRONT_PIN);
+		delay(10);
 		/*Serial.print("Right_Back ");
 		Serial.print(backDist);
 		Serial.print(" Inches, Right_Front ");
 		Serial.println(frontDist);
 		*/
 	} while (backDist > frontDist);
+	stop();
+	}
+	
+void turnRight90AlignRight(int speed) {
+	int distance = TURN90 * 0.95;
+	setMotorSpeed(speed,speed, FORWARD, BACKWARD);
+	int prevVal = checkOdometry();
+	while (distance > 0){
+		int val = checkOdometry();
+		if (prevVal != val){
+			distance--;
+			prevVal = val;
+		}
+	}
+	float backDist, frontDist;
+	do {
+		backDist = readSonarDistance(RIGHT_BACK_PIN);
+		delay(10);
+		frontDist = readSonarDistance(RIGHT_FRONT_PIN);
+		delay(10);
+		/*Serial.print("Right_Back ");
+		Serial.print(backDist);
+		Serial.print(" Inches, Right_Front ");
+		Serial.println(frontDist);
+		*/
+	} while (backDist < frontDist);
 	stop();
 	}
 
@@ -413,8 +574,8 @@ bool followRightWall2(float nearDistance, float farDistance, int speed, float th
 	//Serial.print("frontDist "); Serial.print(frontDist); Serial.print("\n");
 	//Serial.print("backDist "); Serial.print(backDist); Serial.print("\n");
 	//Serial.print("offset "); Serial.print(offset); Serial.print("\n");
-//	Serial.print("nearDistance "); Serial.print(nearDistance); Serial.print("\n");
-//	Serial.print("farDistance "); Serial.print(farDistance); Serial.print("\n\n");
+	//Serial.print("nearDistance "); Serial.print(nearDistance); Serial.print("\n");
+	//Serial.print("farDistance "); Serial.print(farDistance); Serial.print("\n\n");
 	
 	
     if ((frontDist - backDist) > offset ) {
@@ -423,7 +584,7 @@ bool followRightWall2(float nearDistance, float farDistance, int speed, float th
 				FORWARD, FORWARD);
     }
     else if ((frontDist - backDist)< offset ){ 
-	  // Serial.print("Left_Turn "); Serial.print(frontDist-backDist); Serial.print("\n");
+	   //Serial.print("Left_Turn "); Serial.print(frontDist-backDist); Serial.print("\n");
 		setMotorSpeed(speed-TURN_ADJUST, speed,
                 FORWARD, FORWARD);
     }
@@ -446,7 +607,7 @@ void stop(int pause) {
 
 void initialize() {
  //initialize
-    pinMode(WHITELINE_PIN, WHITELINE_DIR);
+    //pinMode(WHITELINE_PIN, WHITELINE_DIR);
     pinMode(ODOMETRY_PIN, ODOMETRY_DIR);
     pinMode(EXTINGUISHER_PIN, EXTINGUISHER_DIR);
 //	pinMode(FRONT_PROXIMITY_PIN, FRONT_PROXIMITY_DIR);
@@ -518,13 +679,16 @@ void moveToCandle(int speed, int maxDistance) {
 
 int locateCandle(int speed, bool turnRight) {
 	int found = 0;
-	int distance = TURN90;
+	int adjust = 7;
+	int distance = TURN90+adjust;
 	int maxVal = 0;
 	int angleAtMaxVal;
 	if (turnRight) {
+		turnLeftUntil(adjust);
 		setMotorSpeed(speed,speed, FORWARD, BACKWARD);
 	}
 	else{
+		turnRightUntil(adjust);
 		setMotorSpeed(speed,speed, BACKWARD, FORWARD);
 	}
 	int prevVal = checkOdometry();
@@ -584,6 +748,7 @@ int locateCandle(int speed, bool turnRight) {
 }
 
 void fullStop() {
+	digitalWrite(13, HIGH);
 	stop(100000);
 }
 	
